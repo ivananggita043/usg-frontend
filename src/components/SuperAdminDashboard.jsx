@@ -8,7 +8,7 @@ import "./SuperAdminDashboard.css";
 import BuyerPerformance from "./BuyerPerformance.jsx";
 import { SECTIONS } from "../config/sections.js";
 import { useSuperDay } from "../api/superDashboard.js";
-import { useBuyerStyleReport } from "../api/buyerStyleReport.js";
+import { useBuyerStyleDay } from "../api/inspectionReports.js";
 
 /* ---------- helper tanggal ---------- */
 const MONTHS = [
@@ -66,7 +66,8 @@ export default function SuperAdminDashboard({
   const mock = useMemo(() => superDay(date), [date]);
   const live = useSuperDay(date, mock);
   const { kpi, sections } = live.data ?? { kpi: null, sections: [] };
-  const buyerStyle = useBuyerStyleReport(date, true);
+  const [bsSec, setBsSec] = useState("sewing");
+  const buyerStyle = useBuyerStyleDay(bsSec, date, true);
   const topDefects = live.data?.topDefects ?? [];
   const isToday = date === TODAY;
   const maxDefect = Math.max(1, ...topDefects.map((d) => d.count));
@@ -287,10 +288,14 @@ export default function SuperAdminDashboard({
           </>
         )}
         <BuyerPerformance
-          sections={["all"]}
+          sections={["sewing", "washing", "finishing", "packing"]}
+          section={bsSec}
+          onSection={setBsSec}
           date={date}
           live={buyerStyle}
-          onSelect={(sel) => setPick({ ...sel, date })}
+          onSelect={(sel) =>
+            onOpenBuyerStyle?.({ ...sel, date, section: bsSec })
+          }
         />
         <p className="perf-legend">
           Buyer &amp; Style covers Sewing, Washing, Finishing and Packing.

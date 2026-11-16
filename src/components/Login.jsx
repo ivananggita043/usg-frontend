@@ -3,7 +3,7 @@ import StatusBar from "./StatusBar.jsx";
 import { login } from "../api/auth.js";
 import "./Login.css";
 
-export default function Login({ notice = "", onLogin }) {
+export default function Login({ notice = "", onLogin, onVisitor }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -125,6 +125,23 @@ export default function Login({ notice = "", onLogin }) {
             Contact Admin
           </button>
         </p>
+
+        {onVisitor && (
+          <button
+            type="button"
+            className="contact-link"
+            style={{
+              display: "block",
+              margin: "14px auto 0",
+              minHeight: 44,
+              fontSize: 16,
+            }}
+            onClick={onVisitor}
+          >
+            Continue as visitor (sample data)
+          </button>
+        )}
+        
       </div>
       {help && (
         <div className="lg-overlay" onClick={() => setHelp(null)}>

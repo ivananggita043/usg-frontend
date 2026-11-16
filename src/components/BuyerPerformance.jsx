@@ -24,14 +24,23 @@ const SORTS = {
   volume: (a, b) => b.inspections - a.inspections,
 };
 
-export default function BuyerPerformance({ sections, date, live, onSelect }) {
+export default function BuyerPerformance({
+  sections,
+  date,
+  live,
+  onSelect,
+  section,
+  onSection,
+}) {
+  const controlled = Boolean(onSection);
   const [tab, setTab] = useState("buyer");
   const [sort, setSort] = useState("worst");
   const [scope, setScope] = useState("all");
   const [open, setOpen] = useState(null);
   const [showAll, setShowAll] = useState(false);
 
-  const secs = scope === "all" ? sections : [scope];
+  const scopeNow = controlled ? section : scope;
+  const secs = scopeNow === "all" ? sections : [scopeNow];
   const buyers = useMemo(
     () => (live ? (live.data ?? []) : buyerPerformance(secs, date)),
     [live?.data, secs.join(), date],
@@ -60,15 +69,15 @@ export default function BuyerPerformance({ sections, date, live, onSelect }) {
 
       {sections.length > 1 && (
         <div className="bp-chips" role="tablist" aria-label="Section">
-          {["all", ...sections].map((k) => (
+          {(controlled ? sections : ["all", ...sections]).map((k) => (
             <button
               key={k}
               type="button"
               role="tab"
-              aria-selected={scope === k}
-              className={`bp-chip ${scope === k ? "on" : ""}`}
+              aria-selected={scopeNow === k}
+              className={`bp-chip ${scopeNow === k ? "on" : ""}`}
               onClick={() => {
-                setScope(k);
+                controlled ? onSection(k) : setScope(k);
                 reset();
               }}
             >

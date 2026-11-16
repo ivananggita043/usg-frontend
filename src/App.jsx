@@ -25,6 +25,7 @@ import CuttingHistory from "./components/CuttingHistory.jsx";
 import { createInspection } from "./api/inspections.js";
 import WashingType from "./components/WashingType.jsx";
 import InspectionHistory from "./components/InspectionHistory.jsx";
+import VisitorDemo from "./components/VisitorDemo.jsx";
 
 const PROTECTED = [
   "dashboard",
@@ -328,6 +329,10 @@ export default function App() {
       );
     }
 
+    if (current === "visitor") {
+      return <VisitorDemo onExit={() => setScreen("login")} />;
+    }
+
     if (current === "users") {
       return (
         <Users
@@ -553,6 +558,7 @@ export default function App() {
             setNotice("");
             setScreen("dashboard");
           }}
+          onVisitor={() => setScreen("visitor")}
         />
       );
     }

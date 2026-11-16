@@ -161,3 +161,18 @@
   .st-kpis { gap: 20px; }
   .st-kpi { padding: 18px 22px; }
 }
+
+.td-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+.td-tiles > div { background: #f6f6f6; border-radius: 10px; padding: 12px; }
+.td-tiles strong { display: block; font-size: 24px; }
+.td-tiles span { font-size: 15px; color: #555; }
+.td-prev { margin: 10px 0 14px; font-size: 16px; color: #555; }
+.td-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.td-nm { display: block; font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.td-line { display: grid; grid-template-columns: 84px 1fr 64px; gap: 8px; align-items: center; min-height: 32px; font-size: 16px; }
+.td-line em { font-style: normal; color: #555; }
+.td-line b { text-align: right; }
+.td-bar { height: 14px; background: #e6e6e6; border-radius: 7px; overflow: hidden; }
+.td-bar i { display: block; height: 100%; border-radius: 7px; }
+.td-bar i.old { background: #9a9a9a; }
+@media (max-width: 480px) { .td-tiles { grid-template-columns: 1fr; } }

@@ -32,3 +32,26 @@ body {
 .hist-chip { flex: none; min-height: 44px; padding: 0 18px; font-size: 16px; border-radius: 22px; border: 1px solid #5b5bd6; background: #fff; color: #5b5bd6; }
 .hist-chip.on { background: #5b5bd6; color: #fff; font-weight: 600;}
 
+.hs-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin: 0 -20px 14px;
+  padding: 2px 20px;
+  scrollbar-width: none;
+}
+.hs-tabs::-webkit-scrollbar { display: none; }
+.hs-tab {
+  flex: none;
+  min-height: 44px;
+  padding: 0 18px;
+  font: inherit;
+  font-size: 16px;
+  color: #3748a1;
+  background: #fff;
+  border: 1px solid #3748a1;
+  border-radius: 22px;
+  cursor: pointer;
+}
+.hs-tab.on { background: #3748a1; color: #fff; font-weight: 600; }
+.hs-tab:focus-visible { outline: 2px solid #3748a1; outline-offset: 2px; }

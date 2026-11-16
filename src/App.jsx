@@ -398,40 +398,40 @@ export default function App() {
         packing: "Packing",
       };
       return (
-        <>
-          {isSuper && !historyFocus && (
-            <div className="hist-secbar" role="tablist" aria-label="Section">
-              {LIVE_HISTORY.map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  role="tab"
-                  aria-selected={hs === k}
-                  className={`hist-chip${hs === k ? " on" : ""}`}
-                  onClick={() => setHistSec(k)}
-                >
-                  {NAMES[k]}
-                </button>
-              ))}
-            </div>
-          )}
-          <Page
-            key={hs}
-            user={user}
-            section={hs}
-            focus={historyFocus}
-            lineNames={su?.lineNames ?? []}
-            isAdmin={isAdmin}
-            onBack={() => {
-              if (historyFocus) {
-                setHistoryFocus(null);
-                setViewSection(null);
-              }
-              setHistSec(null);
-              setScreen("dashboard");
-            }}
-          />
-        </>
+        <Page
+          key={hs}
+          user={user}
+          section={hs}
+          focus={historyFocus}
+          lineNames={su?.lineNames ?? []}
+          isAdmin={isAdmin}
+          sectionTabs={
+            isSuper && !historyFocus ? (
+              <div className="hs-tabs" role="tablist" aria-label="Section">
+                {LIVE_HISTORY.map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    role="tab"
+                    aria-selected={hs === k}
+                    className={`hs-tab${hs === k ? " on" : ""}`}
+                    onClick={() => setHistSec(k)}
+                  >
+                    {NAMES[k]}
+                  </button>
+                ))}
+              </div>
+            ) : null
+          }
+          onBack={() => {
+            if (historyFocus) {
+              setHistoryFocus(null);
+              setViewSection(null);
+            }
+            setHistSec(null);
+            setScreen("dashboard");
+          }}
+        />
       );
     }
 

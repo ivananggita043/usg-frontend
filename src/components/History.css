@@ -594,4 +594,5 @@
   .hs-overlay.out {
     animation: hs-fade-out 0.32s var(--ease-fade-out) both;
   }
+  
 }

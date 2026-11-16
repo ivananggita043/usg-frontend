@@ -322,7 +322,7 @@ function EditSheet({ row, onClose: closeNow, onSave }) {
   );
 }
 
-export default function CuttingHistory({ user, isAdmin = false, onBack }) {
+export default function CuttingHistory({ user, isAdmin = false, sectionTabs, onBack }) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("recent");
   const [buyer, setBuyer] = useState("all");
@@ -442,6 +442,8 @@ export default function CuttingHistory({ user, isAdmin = false, onBack }) {
         </button>
         <h1 className="hs-title">{user?.area ?? "CUTTING"}</h1>
       </header>
+
+      {sectionTabs}
 
       <div className="hs-tools">
         <label className="hs-search">

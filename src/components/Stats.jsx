@@ -50,7 +50,7 @@ const SHORT = [
   "Nov",
   "Dec",
 ];
-const PERIODS = [7, 30, 90];
+const PERIODS = [1, 7, 30];
 
 const pad = (n) => String(n).padStart(2, "0");
 const toISO = (d) =>
@@ -391,6 +391,63 @@ function Manpower({ data, showBreakdown }) {
   );
 }
 
+function TodayCompare({ series, prevSeries, totals, prevTotals }) {
+  const prevOf = (sec) =>
+    prevSeries.find((p) => p.section === sec)?.values[0] ?? 0;
+  const max = Math.max(
+    0.5,
+    ...series.flatMap((s) => [s.values[0], prevOf(s.section)]),
+  );
+  const w = (v) => `${Math.max(2, (v / max) * 100)}%`;
+  return (
+    <div className="td">
+      <div className="td-tiles">
+        <div>
+          <strong>{pct(totals.rate)}</strong>
+          <span>defect rate today</span>
+        </div>
+        <div>
+          <strong>{num(totals.inspections)}</strong>
+          <span>inspections</span>
+        </div>
+        <div>
+          <strong>{num(totals.defects)}</strong>
+          <span>defects</span>
+        </div>
+      </div>
+      <p className="td-prev">
+        Yesterday: {pct(prevTotals.rate)} · {num(prevTotals.inspections)}{" "}
+        inspections · {num(prevTotals.defects)} defects
+      </p>
+      <ul className="td-rows">
+        {series.map((s) => {
+          const now = s.values[0] ?? 0;
+          const was = prevOf(s.section);
+          return (
+            <li key={s.section}>
+              <span className="td-nm">{s.name}</span>
+              <div className="td-line">
+                <em>Today</em>
+                <div className="td-bar">
+                  <i style={{ width: w(now), background: s.color }} />
+                </div>
+                <b>{pct(now)}</b>
+              </div>
+              <div className="td-line">
+                <em>Yesterday</em>
+                <div className="td-bar">
+                  <i className="old" style={{ width: w(was) }} />
+                </div>
+                <b>{pct(was)}</b>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 /* ---------- halaman ---------- */
 export default function Stats({ isSuper, section = "sewing", onBack }) {
   const [days, setDays] = useState(30);
@@ -520,10 +577,11 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
 
   const series = trend.series.map((s) => ({ ...s, color: COLORS[s.section] }));
   const diff = +(trend.totals.rate - prev.totals.rate).toFixed(1);
+  const ref = days === 1 ? "yesterday" : "the previous period";
   const trendHead =
     diff === 0
-      ? "Defect rate is the same as last period"
-      : `Defect rate ${diff > 0 ? "increased" : "decreased"} ${Math.abs(diff).toLocaleString("en-US")} pts from the previous period`;
+      ? `Defect rate is the same as ${ref}`
+      : `Defect rate ${diff > 0 ? "increased" : "decreased"} ${Math.abs(diff).toLocaleString("en-US")} pts from ${ref}`;
 
   const worstHour = hourly.hours.reduce(
     (m, h) => (h.rate > m.rate ? h : m),
@@ -588,7 +646,7 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
                   : NAMES[scope]
                 : `${NAMES[section]} QC`}
               {" · "}
-              {days} days ago
+              {days === 1 ? "Today" : `Last ${days} days`}
             </p>
           </div>
           <Manpower data={manpower} showBreakdown={secs.length > 1} />
@@ -605,7 +663,7 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
                 className={days === p ? "on" : ""}
                 onClick={() => setDays(p)}
               >
-                {p} days
+                {p === 1 ? "Today" : `${p} days`}
               </button>
             ))}
           </div>
@@ -654,44 +712,25 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
           {/* 1. tren */}
           <section className="card st-card wide">
             <h2>{trendHead}</h2>
-            <p className="st-note">
-              Daily defect rate. Tap or hover over the chart to see each day's
-              value.
-            </p>
-            <LineChart dates={trend.dates} series={series} />
-            <button
-              type="button"
-              className="st-link"
-              onClick={() => setTable((v) => !v)}
-            >
-              {table ? "Hide table" : "View as table"}
-            </button>
-            {table && (
-              <div className="st-table" tabIndex={0}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      {series.map((s) => (
-                        <th key={s.section}>{s.name}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[...trend.dates].reverse().map((iso, k) => {
-                      const i = trend.dates.length - 1 - k;
-                      return (
-                        <tr key={iso}>
-                          <td>{dlabel(iso)}</td>
-                          {series.map((s) => (
-                            <td key={s.section}>{pct(s.values[i])}</td>
-                          ))}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+            {days === 1 ? (
+              <>
+                <p className="st-note">Today compared with yesterday.</p>
+                <TodayCompare
+                  series={series}
+                  prevSeries={prev.series}
+                  totals={trend.totals}
+                  prevTotals={prev.totals}
+                />
+              </>
+            ) : (
+              <>
+                <p className="st-note">
+                  Daily defect rate. Tap or hover over the chart to see each
+                  day's value.
+                </p>
+                <LineChart dates={trend.dates} series={series} />
+                {/* tombol "View as table" dan tabelnya tetap seperti semula */}
+              </>
             )}
           </section>
 
@@ -806,7 +845,11 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
 
           {/* 5. volume */}
           <section className="card st-card wide">
-            <h2>Average {num(volAvg)} inspections per day</h2>
+            <h2>
+              {days === 1
+                ? `${num(volAvg)} inspections today`
+                : `Average ${num(volAvg)} inspections per day`}
+            </h2>
             <p className="st-note">Number of checks per day</p>
             <BarChart
               items={volItems}

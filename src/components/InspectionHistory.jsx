@@ -479,6 +479,7 @@ export default function InspectionHistory({
   isAdmin = false,
   onBack,
   focus,
+  sectionTabs,
 }) {
   const [defectTypes, setDefectTypes] = useState({}); // id -> {id,name,category,areaName}
   const [adminLines, setAdminLines] = useState([]);
@@ -680,6 +681,8 @@ export default function InspectionHistory({
         </button>
         <h1 className="hs-title">{user?.area ?? section.toUpperCase()}</h1>
       </header>
+    
+      {sectionTabs}
 
       <div className="hs-tools">
         <label className="hs-search">

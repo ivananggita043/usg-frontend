@@ -182,3 +182,72 @@ export function buildLineDefects(list, typesById, endISO, days) {
     }))
     .sort((a, b) => b.rate - a.rate || b.inspections - a.inspections);
 }
+
+export function buildBuyerStyleStats(list, typesById, endISO, days) {
+  const [y, m, d] = endISO.split("-").map(Number);
+  const dates = [];
+  for (let k = days - 1; k >= 0; k--) dates.push(isoOfDate(new Date(y, m - 1, d - k)));
+  const idx = Object.fromEntries(dates.map((iso, i) => [iso, i]));
+  const zeros = () => Array(days).fill(0);
+  const norm = (s) => String(s ?? "").trim().toUpperCase();
+
+  const styleMap = new Map(); // "BUYER|STYLE" -> agregat
+  list.forEach((x) => {
+    if (!x.createdAt) return;
+    const i = idx[isoOfDate(new Date(x.createdAt))];
+    if (i === undefined) return;
+    const k = `${norm(x.buyerName)}|${norm(x.styleCode)}`;
+    const o = styleMap.get(k) ?? {
+      buyer: x.buyerName,
+      style: x.styleCode,
+      chk: zeros(), // jumlah pengecekan
+      qty: zeros(), // pcs yang diperiksa
+      def: zeros(), // pcs defect
+      types: new Map(),
+    };
+    o.chk[i] += 1;
+    o.qty[i] += x.inspectQuantity || 0;
+    o.def[i] += x.totalDefect || 0;
+    addDefects(o.types, x, typesById);
+    styleMap.set(k, o);
+  });
+
+  const sum = (a) => a.reduce((p, q) => p + q, 0);
+  const add = (group, f) => group.reduce((a, o) => a.map((v, i) => v + o[f][i]), zeros());
+
+  const pack = (name, group, extra = {}) => {
+    const chk = add(group, "chk");
+    const qty = add(group, "qty");
+    const def = add(group, "def");
+    const types = new Map();
+    group.forEach((o) =>
+      o.types.forEach((t, key) => {
+        const cur = types.get(key) ?? { name: t.name, count: 0 };
+        cur.count += t.count;
+        types.set(key, cur);
+      }),
+    );
+    const defects = sum(def);
+    return {
+      name,
+      inspections: sum(chk),
+      defects,
+      rate: rateOf(defects, sum(qty)),
+      series: qty.map((n, i) => (n ? rateOf(def[i], n) : null)),
+      topDefects: topOf(types, 5),
+      ...extra,
+    };
+  };
+
+  const items = [...styleMap.values()];
+  const styles = items.map((o) => pack(o.style, [o], { buyer: o.buyer }));
+  const buyers = [...new Set(items.map((o) => norm(o.buyer)))].map((bk) => {
+    const group = items.filter((o) => norm(o.buyer) === bk);
+    const buyerName = group[0].buyer;
+    return pack(buyerName, group, {
+      styles: group.map((o) => pack(o.style, [o], { buyer: buyerName })),
+    });
+  });
+
+  return { dates, buyers, styles };
+}

@@ -3,20 +3,25 @@ import { statsBuyerStyle } from "../mock/dashboardData.js";
 import "./StatsBuyerStyle.css";
 
 const num = (n) => Number(n).toLocaleString("en-US");
-const pct = (n) => `${Number(n).toLocaleString("en-US", { maximumFractionDigits: 1 })}%`;
+const pct = (n) =>
+  `${Number(n).toLocaleString("en-US", { maximumFractionDigits: 1 })}%`;
 const LIMIT = 5;
 
-export default function StatsBuyerStyle({ section, days, endISO }) {
+export default function StatsBuyerStyle({ section, days, endISO, live }) {
   const [tab, setTab] = useState("buyer");
   const [all, setAll] = useState(false);
 
-  const data = useMemo(() => statsBuyerStyle(section, endISO, days), [section, endISO, days]);
+  const mock = useMemo(
+    () => (live ? null : statsBuyerStyle(section, endISO, days)),
+    [live, section, endISO, days],
+  );
+  const data = live ?? mock;
   const rows = useMemo(
     () =>
       [...(tab === "buyer" ? data.buyers : data.styles)].sort(
-        (a, b) => b.rate - a.rate || b.inspections - a.inspections
+        (a, b) => b.rate - a.rate || b.inspections - a.inspections,
       ),
-    [data, tab]
+    [data, tab],
   );
 
   const max = Math.max(0.1, ...rows.map((r) => r.rate));
@@ -30,18 +35,27 @@ export default function StatsBuyerStyle({ section, days, endISO }) {
           : "Buyer & style"}
       </h2>
       <p className="st-note">
-        {tab === "buyer" ? "Comparison between buyers" : "Comparison between styles"}, highest first
+        {tab === "buyer"
+          ? "Comparison between buyers"
+          : "Comparison between styles"}
+        , highest first
       </p>
 
       <div className="sbs-tabs" role="tablist" aria-label="Group by">
-        {[["buyer", "Buyer"], ["style", "Style"]].map(([k, l]) => (
+        {[
+          ["buyer", "Buyer"],
+          ["style", "Style"],
+        ].map(([k, l]) => (
           <button
             key={k}
             type="button"
             role="tab"
             aria-selected={tab === k}
             className={tab === k ? "on" : ""}
-            onClick={() => { setTab(k); setAll(false); }}
+            onClick={() => {
+              setTab(k);
+              setAll(false);
+            }}
           >
             {l}
           </button>
@@ -58,19 +72,27 @@ export default function StatsBuyerStyle({ section, days, endISO }) {
                 <div className="row">
                   <span className="nm">
                     {r.name}
-                    {tab === "style" && <small className="sbs-sub">{r.buyer}</small>}
+                    {tab === "style" && (
+                      <small className="sbs-sub">{r.buyer}</small>
+                    )}
                   </span>
                   <b>{pct(r.rate)}</b>
                 </div>
                 <div className="bar">
-                  <i style={{ width: `${Math.max(3, (r.rate / max) * 100)}%` }} />
+                  <i
+                    style={{ width: `${Math.max(3, (r.rate / max) * 100)}%` }}
+                  />
                 </div>
               </li>
             ))}
           </ul>
 
           {rows.length > LIMIT && (
-            <button type="button" className="sbs-more" onClick={() => setAll((v) => !v)}>
+            <button
+              type="button"
+              className="sbs-more"
+              onClick={() => setAll((v) => !v)}
+            >
               {all ? "Show less" : `View all (${rows.length})`}
             </button>
           )}

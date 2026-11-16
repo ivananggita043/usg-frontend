@@ -15,6 +15,7 @@ import { useQcCounts } from "../api/users.js";
 import {
   buildInspectionStats,
   buildLineDefects,
+  buildBuyerStyleStats,
   useInspectionStatsData,
 } from "../api/inspectionStats.js";
 import { buildCuttingProcessDefects } from "../api/cutting.js";
@@ -400,10 +401,18 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
   const key = secs.join();
   const byBuyer =
     secs.length === 1 && (secs[0] === "washing" || secs[0] === "finishing");
+  const bsData = useInspectionStatsData(secs[0], secs.length === 1 && byBuyer);
+  const buyerStyleLive = useMemo(
+    () =>
+      byBuyer && bsData.list
+        ? buildBuyerStyleStats(bsData.list, bsData.types, TODAY, days)
+        : null,
+    [byBuyer, bsData.list, bsData.types, days],
+  );
   const prevEnd = toISO(addDays(TODAY_D, -days));
 
   // section yang statistiknya sudah memakai data asli
-  const LIVE_INS = ["sewing"]; // tambahkan "washing", "finishing", "packing" bila siap
+  const LIVE_INS = ["sewing", "washing", "finishing", "packing"]; // tambahkan "washing", "finishing", "packing" bila siap
 
   const isCut = secs.length === 1 && secs[0] === "cutting";
   const isIns = secs.length === 1 && LIVE_INS.includes(secs[0]);
@@ -743,7 +752,12 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
 
           {/* 4. perbandingan */}
           {byBuyer ? (
-            <StatsBuyerStyle section={secs[0]} days={days} endISO={TODAY} />
+            <StatsBuyerStyle
+              section={secs[0]}
+              days={days}
+              endISO={TODAY}
+              live={buyerStyleLive}
+            />
           ) : (
             <section className="card st-card">
               <h2>

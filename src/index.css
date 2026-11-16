@@ -27,3 +27,8 @@ body {
 .login-inner {
   padding-top: max(var(--top-gap), env(safe-area-inset-top));
 }
+
+.hist-secbar { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px; background: #fff; border-bottom: 1px solid #e3e3e3}
+.hist-chip { flex: none; min-height: 44px; padding: 0 18px; font-size: 16px; border-radius: 22px; border: 1px solid #5b5bd6; background: #fff; color: #5b5bd6; }
+.hist-chip.on { background: #5b5bd6; color: #fff; font-weight: 600;}
+

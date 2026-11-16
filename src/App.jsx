@@ -174,6 +174,7 @@ function buildFinalResult(data) {
 const LIVE_HISTORY = ["cutting", "sewing", "washing", "finishing", "packing"];
 
 export default function App() {
+  const [histSec, setHistSec] = useState(null);
   const [recordFocus, setRecordFocus] = useState(null);
   const [historyFocus, setHistoryFocus] = useState(null);
   const [screen, setScreen] = useState("splash");
@@ -298,6 +299,7 @@ export default function App() {
     if (key === "users") return setScreen("users");
     if (key === "history" && LIVE_HISTORY.includes(section)) {
       setHistoryFocus(null);
+      setHistSec(null);
       return setScreen("history");
     }
     if (key === "records") {
@@ -381,27 +383,55 @@ export default function App() {
     }
 
     if (current === "history") {
+      const hs = isSuper ? (histSec ?? section) : section;
       const Page =
-        section === "cutting"
+        hs === "cutting"
           ? CuttingHistory
-          : LIVE_HISTORY.includes(section)
+          : LIVE_HISTORY.includes(hs)
             ? InspectionHistory
             : History;
+      const NAMES = {
+        cutting: "Cutting",
+        sewing: "Sewing",
+        washing: "Washing",
+        finishing: "Finishing",
+        packing: "Packing",
+      };
       return (
-        <Page
-          user={user}
-          section={section}
-          lineNames={su?.lineNames ?? []}
-          isAdmin={isAdmin}
-          focus={historyFocus}
-          onBack={() => {
-            if (historyFocus) {
-              setHistoryFocus(null);
-              setViewSection(null);
-            }
-            setScreen("dashboard");
-          }}
-        />
+        <>
+          {isSuper && !historyFocus && (
+            <div className="hist-secbar" role="tablist" aria-label="Section">
+              {LIVE_HISTORY.map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  role="tab"
+                  aria-selected={hs === k}
+                  className={`hist-chip${hs === k ? " on" : ""}`}
+                  onClick={() => setHistSec(k)}
+                >
+                  {NAMES[k]}
+                </button>
+              ))}
+            </div>
+          )}
+          <Page
+            key={hs}
+            user={user}
+            section={hs}
+            focus={historyFocus}
+            lineNames={su?.lineNames ?? []}
+            isAdmin={isAdmin}
+            onBack={() => {
+              if (historyFocus) {
+                setHistoryFocus(null);
+                setViewSection(null);
+              }
+              setHistSec(null);
+              setScreen("dashboard");
+            }}
+          />
+        </>
       );
     }
 
@@ -516,6 +546,7 @@ export default function App() {
             onOpenBuyerStyle={(f) => {
               setViewSection(f.section);
               setHistoryFocus(f);
+              setHistSec(null);
               setScreen("history");
             }}
           />

@@ -1,0 +1,16 @@
+.ln-add { background: #fff; border: 1px solid #dfe1ee; border-radius: 14px; padding: 14px; margin: 4px 0 12px; }
+.ln-add label { display: block; font-size: 16px; font-weight: 600; color: #3748a1; margin-bottom: 8px; }
+.ln-add-row, .ln-edit { display: flex; gap: 10px; }
+.ln-add input, .ln-edit input { flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; font-size: 17px; border: 1px solid #b9bccf; border-radius: 10px; }
+.ln-add input:focus, .ln-edit input:focus { outline: 3px solid #ff9d00; outline-offset: 1px; border-color: #3748a1; }
+.ln-add button, .ln-edit button, .ln-actions button { min-height: 48px; padding: 0 16px; font-size: 16px; border-radius: 10px; border: 1px solid #3748a1; background: #fff; color: #3748a1; cursor: pointer; }
+.ln-add button, .ln-edit button.solid { background: #3748a1; color: #fff; font-weight: 600; }
+.ln-add button:disabled, .ln-edit button:disabled, .ln-actions button:disabled { opacity: 0.5; }
+.ln-error { margin: 0 0 10px; padding: 10px 14px; border-radius: 10px; background: #fde4e2; color: #8e1b1b; font-size: 16px; font-weight: 600; }
+.ln-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 4px; }
+.ln-row.off .ln-info strong { color: #8a8fa8; }
+.ln-info { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.ln-info strong { font-size: 19px; font-weight: 600; color: #3748a1; }
+.ln-actions { display: flex; gap: 8px; }
+.ln-edit { width: 100%; }
+@media (max-width: 480px) { .ln-actions { width: 100%; } .ln-actions button { flex: 1; } }

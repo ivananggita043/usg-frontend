@@ -26,6 +26,7 @@ import { createInspection } from "./api/inspections.js";
 import WashingType from "./components/WashingType.jsx";
 import InspectionHistory from "./components/InspectionHistory.jsx";
 import VisitorDemo from "./components/VisitorDemo.jsx";
+import Lines from "./components/Lines.jsx";
 
 const PROTECTED = [
   "dashboard",
@@ -42,6 +43,7 @@ const PROTECTED = [
   "records",
   "stats",
   "washingtype",
+  "lines",
 ];
 
 const ROLE_LABEL = {
@@ -297,6 +299,7 @@ export default function App() {
     if (key === "profile") return setScreen("profile");
     if (key === "reports") return setScreen("reports");
     if (key === "users") return setScreen("users");
+    if (key === "lines") return setScreen("lines");
     if (key === "history" && LIVE_HISTORY.includes(section)) {
       setHistoryFocus(null);
       setHistSec(null);
@@ -344,6 +347,10 @@ export default function App() {
           onBack={() => setScreen("dashboard")}
         />
       );
+    }
+
+    if (current === "lines" && !isSuper && section === "sewing") {
+      return <Lines section="sewing" onBack={() => setScreen("dashboard")} />;
     }
 
     if (current === "reports") {

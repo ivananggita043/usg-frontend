@@ -7,6 +7,12 @@ export const MENU_ADMIN = [
   { key: "profile", label: "PROFILE", icon: "profile" },
 ];
 
+export const MENU_ADMIN_SEWING = [
+  ...MENU_ADMIN.slice(0, 4),
+  { key: "lines", label: "LINES", icon:"line" },
+  ...MENU_ADMIN.slice(4),
+];
+
 export const MENU_SUPER = [
   { key: "home", label: "HOME", icon: "home" },
   { key: "history", label: "ALL DATA", icon: "records" },
@@ -23,3 +29,4 @@ export const PAGE_TITLE = {
   reports: "Reports",
   history: "All Data",
 };
+

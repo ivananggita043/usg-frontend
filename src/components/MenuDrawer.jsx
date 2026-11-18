@@ -137,6 +137,15 @@ function MenuIcon({ name, size = 24 }) {
         <path d="M9 17v-3M12 17v-5M15 17v-2" />
       </svg>
     );
+  if (name === "line")
+    return (
+      <svg {...p}>
+        <path d="M3 8h18M3 12h18M3 16h18" />
+        <circle cx="8" cy="8" r="1.4" />
+        <circle cx="15" cy="12" r="1.4" />
+        <circle cx="10" cy="16" r="1.4" />
+      </svg>
+    );
   if (name === "stats")
     return (
       <svg {...p}>

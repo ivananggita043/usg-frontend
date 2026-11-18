@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { MENU_ADMIN, MENU_SUPER } from "../config/menus.js";
+import { MENU_ADMIN, MENU_ADMIN_SEWING, MENU_SUPER } from "../config/menus.js";
 import { adminDay } from "../mock/dashboardData.js";
 import StatusBar from "./StatusBar.jsx";
 import MenuDrawer from "./MenuDrawer.jsx";
@@ -342,7 +342,7 @@ export default function AdminDashboard({
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         user={user}
-        items={onBack ? MENU_SUPER : MENU_ADMIN}
+        items={onBack ? MENU_SUPER : sec === "sewing" ? MENU_ADMIN_SEWING : MENU_ADMIN}
         active={page}
         onSelect={(key) => {
           setPage(key);

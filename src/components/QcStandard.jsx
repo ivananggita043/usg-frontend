@@ -128,8 +128,12 @@ export default function QcStandard({
         ),
       });
     } catch (e) {
-      setError(e?.message || "Failed to submit. Please try again.");
-      setBusy(false);
+      const msg = e?.message || "";
+      setError(
+        /sudah pernah diinput/i.test(msg)
+        ? "This hour slot has already been submitted for this line today. Please choose another hour or edit the existing entry in All Data."
+        : msg || "Failed to submit. Please try again.",
+      );
     }
   };
 

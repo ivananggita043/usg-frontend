@@ -87,8 +87,8 @@ const SHEETS = [
   { name: "Defect Details", desc: "Defect per area and type" },
   {
     name: "Per Hour",
-    desc: "Sewing and Washing only",
-    only: ["sewing", "washing"],
+    desc: "Sewing, Washing and Finishing only",
+    only: ["sewing", "washing", "finishing"],
   },
   {
     name: "AQL Result",

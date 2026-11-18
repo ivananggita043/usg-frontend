@@ -3,7 +3,7 @@ import { ApiError, apiFetch } from "./client.js";
 import { getToken } from "../auth/session.js";
 
 const PATH = "/user/attendance";
-const MAX_ACCURACY = 50; // meter, sama dengan batas di backend
+const MAX_ACCURACY = 100; // meter, sama dengan batas di backend
 const GPS_WAIT_MS = 20000;
 /* Absensi QC
     GET  /user/attendance/today -> 404 jika belum check-in
@@ -68,8 +68,8 @@ export function getPosition(onProgress) {
 // pesan dari backend (Indonesia) -> teks yang jelas untuk oengguna
 function friendly(message, pos) {
     if (/akurasi gps/i.test(message || "")) {
-        const m = pos ? `GPS signal is too weak${Math.round(pos.accuracy)} m)` : "";
-        return `GPS signal is too weak${m}. It must be within ${MAX_ACCURACY} m. Go outdoors or near a window and try again.`;
+        const m = pos ? `GPS signal is too weak ${Math.round(pos.accuracy)} m)` : "";
+        return `GPS signal is too weak ${m}. It must be within ${MAX_ACCURACY} m. Go outdoors or near a window and try again.`;
     }
     const r = /radius absensi (\d+)/i.exec(message || "");
     if (r) return `You are outside the attendance area. Check in within ${r[1]} m of the office.`;

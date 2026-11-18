@@ -36,6 +36,30 @@ const COLORS = {
 };
 const BAR = "#2a78d6";
 const BAR_SEL = "#184f95";
+const TONE = { good: "#1a8f4a", warn: "#e69500", bad: "#c62828" };
+const TONE_DARK = { good: "#0f6a34", warn: "#a86c00", bad: "#8e1b1b" };
+const TONE_TEXT = { good: "Good", warn: "Watch", bad: "High" };
+const toneOf = (r) => (r <= 5 ? "good" : r <= 10 ? "warn" : "bad");
+
+function ToneLegend() {
+  return (
+    <p className="st-legend-tone">
+      <span>
+        <i style={{ background: TONE.good }} />
+        Good: up to 5%
+      </span>
+      <span>
+        <i style={{ background: TONE.warn }} />
+        Watch: 5-10%
+      </span>
+      <span>
+        <i style={{ background: TONE.bad }} />
+        High: above 10%
+      </span>
+    </p>
+  );
+}
+
 const SHORT = [
   "Jan",
   "Feb",
@@ -262,7 +286,7 @@ function LineChart({ dates, series }) {
 }
 
 /* ---------- grafik batang vertikal ---------- */
-function BarChart({ items, fmt, noun, defaultIndex, ariaLabel }) {
+function BarChart({ items, fmt, noun, defaultIndex, ariaLabel, tone }) {
   const [wrap, W] = useWidth();
   const H = W < 520 ? 220 : W < 800 ? 250 : 280;
   const l = 48,
@@ -317,7 +341,15 @@ function BarChart({ items, fmt, noun, defaultIndex, ariaLabel }) {
               {h > 0 && (
                 <path
                   d={`M${bx},${by + h} L${bx},${by + rr} Q${bx},${by} ${bx + rr},${by} L${bx + bw - rr},${by} Q${bx + bw},${by} ${bx + bw},${by + rr} L${bx + bw},${by + h} Z`}
-                  fill={i === sel ? BAR_SEL : BAR}
+                  fill={
+                    tone
+                      ? (i === sel ? TONE_DARK : TONE)[toneOf(it.value)]
+                      : i === sel
+                        ? BAR_SEL
+                        : BAR
+                  }
+                  stroke={i === sel ? "#262323" : "none"}
+                  strokeWidth={i === sel ? 2 : 0}
                 />
               )}
               {i % every === 0 && (
@@ -429,9 +461,14 @@ function TodayCompare({ series, prevSeries, totals, prevTotals }) {
               <div className="td-line">
                 <em>Today</em>
                 <div className="td-bar">
-                  <i style={{ width: w(now), background: s.color }} />
+                  <i style={{ width: w(now), background: TONE[toneOf(now)] }} />
                 </div>
-                <b>{pct(now)}</b>
+                <b>
+                  {pct(now)}{" "}
+                  <span className={`st-tone ${toneOf(now)}`}>
+                    {TONE_TEXT[toneOf(now)]}
+                  </span>
+                </b>
               </div>
               <div className="td-line">
                 <em>Yesterday</em>
@@ -690,7 +727,9 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
         <section className="st-kpis" aria-label="Summary">
           <div className="st-kpi main">
             <span className="lb">Defect rate</span>
-            <span className="v">{pct(trend.totals.rate)}</span>
+            <span className={`v tone-${toneOf(trend.totals.rate)}`}>
+              {pct(trend.totals.rate)}
+            </span>
             <span className={`delta ${trendCls}`}>
               <i aria-hidden="true">{trendIcon}</i> {trendWord}
               {diff !== 0 && ` ${Math.abs(diff).toLocaleString("en-US")} pts`}
@@ -742,15 +781,17 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
                 : "Defect per hour"}
             </h2>
             <p className="st-note">
-              Defect rate per working hour (Sewing dan Washing)
+              Defect rate per working hour (Sewing, Washing and Finishing)
             </p>
             {hourly.applicable ? (
               <BarChart
+                tone
                 items={hourItems}
                 fmt={(v) => pct(v)}
                 noun="Defect rate"
                 ariaLabel="Defect rate per hour"
               />
+              
             ) : (
               <p className="st-empty">
                 This section is checked daily, so there is no hourly data.
@@ -779,7 +820,13 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
                     <b>{num(d.count)}</b>
                   </div>
                   <div className="bar">
-                    <i style={{ width: `${(d.count / maxDef) * 100}%` }} />
+                    <i
+                      style={{
+                        width: `${(d.count / maxDef) * 100}%`,
+                        background:
+                          i === 0 ? "#c62828" : i < 3 ? "#e57373" : "#f1b0ab",
+                      }}
+                    />
                   </div>
                   <div className="meta">
                     {pct(d.share)} of total · cumulative {d.cum}%
@@ -817,12 +864,18 @@ export default function Stats({ isSuper, section = "sewing", onBack }) {
                   <li key={r.name}>
                     <div className="row">
                       <span className="nm">{r.name}</span>
-                      <b>{pct(r.rate)}</b>
+                      <b>
+                        {pct(r.rate)}
+                        <span className={`st-tone ${toneOf(r.rate)}`}>
+                          {TONE_TEXT[toneOf(r.rate)]}
+                        </span>
+                      </b>
                     </div>
                     <div className="bar">
                       <i
                         style={{
                           width: `${Math.max(3, (r.rate / maxLine) * 100)}%`,
+                          background: TONE[toneOf(r.rate)],
                         }}
                       />
                     </div>

@@ -1,0 +1,13 @@
+.ah-mock { margin: 0 0 12px; padding: 10px 14px; border-radius: 10px; background: #fff4d6; color: #5a4300; font-size: 15px; }
+.ah-list { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 10px; }
+.ah-row { background: #fff; border: 1px solid #dfe1ee; border-left: 6px solid var(--c, #3748a1); border-radius: 12px; padding: 14px 16px; }
+.ah-row.ok { --c: #1a8f4a; } .ah-row.warn { --c: #e69500; } .ah-row.bad { --c: #c62828; } .ah-row.info { --c: #3748a1; }
+.ah-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ah-top strong { font-size: 18px; color: #3748a1; }
+.ah-badge { padding: 3px 12px; border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap;}
+.ah-badge.ok { background: #e3f5ea; color: #0f6a34; }
+.ah-badge.warn { background: #fff1d6; color: #8a5a00; }
+.ah-badge.bad { background: #fde4e2; color: #8e1b1b; }
+.ah-badge.info { background: #e8eaf5; color: #3748a1; }
+.ah-times { margin: 8px 0 2px; font-size: 18px; font-weight: 600; }
+.ah-sub { margin: 4px 0 0; font-size: 16px; color: #555; }

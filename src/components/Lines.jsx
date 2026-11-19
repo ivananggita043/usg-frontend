@@ -68,10 +68,18 @@ export default function Lines({ section = "sewing", onBack }) {
       setName("");
   };
 
-  const saveEdit = async (l) =>
+  const saveEdit = async (l) => {
+    const n = editName.trim();
+    if (!n) return setError("Line name cannot be empty.");
+    if (n === l.name) return setEditId(null);
+    if (await run(() => renameLine(l.id, n, section), "Line renamed."))
+        setEditId(null);
+    };
+
+   const toggle = (l) =>
     run(
-      () => setLineActive(l.id, !l.active),
-      l.active ? `Line "${l.name} dectivated.` : `Line "${l.name}" activated.`,
+        () => setLineActive(l.id, !l.active),
+        l.active ? `Line "${l.name}" deactivated.` : `Line "${l.name}" activated.`,
     );
 
   const activeCount = lines.filter((l) => l.active).length;
@@ -104,7 +112,7 @@ export default function Lines({ section = "sewing", onBack }) {
             <input
               id="ln-name"
               value={name}
-              maxLenght={30}
+              maxLength={30}
               placeholder="e.g. Line 7"
               onChange={(e) => {
                 setName(e.target.value);

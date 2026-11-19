@@ -27,6 +27,7 @@ import WashingType from "./components/WashingType.jsx";
 import InspectionHistory from "./components/InspectionHistory.jsx";
 import VisitorDemo from "./components/VisitorDemo.jsx";
 import Lines from "./components/Lines.jsx";
+import AttendanceHistory from "./components/AttendanceHistory.jsx";
 
 const PROTECTED = [
   "dashboard",
@@ -44,6 +45,7 @@ const PROTECTED = [
   "stats",
   "washingtype",
   "lines",
+  "attendance",
 ];
 
 const ROLE_LABEL = {
@@ -349,7 +351,11 @@ export default function App() {
       );
     }
 
-    if (current === "lines" && !isSuper && section === "sewing") {
+    if (current === "attendance") {
+      return <AttendanceHistory onBack={() => setScreen("dashboard")} />;
+    }
+
+    if (current === "lines" && (isSuper || section === "sewing")) {
       return <Lines section="sewing" onBack={() => setScreen("dashboard")} />;
     }
 
@@ -540,6 +546,7 @@ export default function App() {
       const goUserMenu = (key) => {
         if (key === "profile") setScreen("profile");
         if (key === "records") setScreen("records");
+        if (key === "attendance") setScreen("attendance");
       };
 
       // super admin: ringkasan semua section

@@ -61,6 +61,7 @@ const TODAY = toISO(new Date());
 
 const MENU = [
   { key: "home", label: "HOME", icon: "home" },
+  { key: "attendance", label: "ATTENDANCE", icon: "attendance" },
   { key: "profile", label: "PROFILE", icon: "profile" },
 ];
 
@@ -373,6 +374,14 @@ function MenuIcon({ name, size = 24 }) {
     strokeLinejoin: "round",
     "aria-hidden": true,
   };
+  if (name === "attendance")
+    return (
+      <svg {...p}>
+        <rect x="3.1" y="5" width="18" height="16" rx="2" />
+        <path d="M3.5 10h17M8 3v4M16 3v4"/>
+        <path d="m9 15 2 2 4-4" />
+      </svg>
+    );
   if (name === "home")
     return (
       <svg {...p}>

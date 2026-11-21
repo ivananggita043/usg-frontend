@@ -146,6 +146,14 @@ function MenuIcon({ name, size = 24 }) {
         <circle cx="10" cy="16" r="1.4" />
       </svg>
     );
+    if (name === "attendance")
+      return (
+        <svg {...p}>
+          <rect x="3.5" y="5" width="17" height="15" rx="2" />
+          <path d="M3.5 10h17M8 3v4m16 3v4"/>
+          <path d="m9 15 2 2 4-4"/>
+        </svg>
+      );
   if (name === "stats")
     return (
       <svg {...p}>

@@ -28,6 +28,7 @@ import InspectionHistory from "./components/InspectionHistory.jsx";
 import VisitorDemo from "./components/VisitorDemo.jsx";
 import Lines from "./components/Lines.jsx";
 import AttendanceHistory from "./components/AttendanceHistory.jsx";
+import AttendanceAdmin from "./components/AttendanceAdmin.jsx";
 
 const PROTECTED = [
   "dashboard",
@@ -46,6 +47,7 @@ const PROTECTED = [
   "washingtype",
   "lines",
   "attendance",
+  "adminattendance",
 ];
 
 const ROLE_LABEL = {
@@ -302,6 +304,7 @@ export default function App() {
     if (key === "reports") return setScreen("reports");
     if (key === "users") return setScreen("users");
     if (key === "lines") return setScreen("lines");
+    if (key === "attendance") return setScreen("adminattendance");
     if (key === "history" && LIVE_HISTORY.includes(section)) {
       setHistoryFocus(null);
       setHistSec(null);
@@ -353,6 +356,15 @@ export default function App() {
 
     if (current === "attendance") {
       return <AttendanceHistory onBack={() => setScreen("dashboard")} />;
+    }
+
+    if (current === "adminattendance") {
+      return (
+        <AttendanceAdmin
+          isSuper={isSuper}
+          onBack={() => setScreen("dashboard")}
+        />
+      );
     }
 
     if (current === "lines" && (isSuper || section === "sewing")) {

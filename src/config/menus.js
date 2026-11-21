@@ -3,6 +3,7 @@ export const MENU_ADMIN = [
   { key: "history", label: "ALL DATA", icon: "records" },
   { key: "stats", label: "STATISTIK", icon: "stats" },
   { key: "users", label: "USERS", icon: "users" },
+  { key: "attendance", label: "ATTENDANCE", icon: "attendance" },
   { key: "reports", label: "REPORT", icon: "report" },
   { key: "profile", label: "PROFILE", icon: "profile" },
 ];
@@ -18,6 +19,7 @@ export const MENU_SUPER = [
   { key: "history", label: "ALL DATA", icon: "records" },
   { key: "stats", label: "STATISTIK", icon: "stats" },
   { key: "users", label: "USERS", icon: "users" },
+  { key: "attendance", label: "ATTENDANCE", icon: "attendance" },
   { key: "lines", label: "LINES", icon: "line" },
   { key: "reports", label: "REPORT", icon: "report" },
   { key: "profile", label: "PROFILE", icon: "profile" },

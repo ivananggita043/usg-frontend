@@ -9,6 +9,7 @@ export default function Login({ notice = "", onLogin, onVisitor }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [help, setHelp] = useState(null); // null | "forgot" | "contact"
+  const [showPw, setShowPw] = useState(false);
 
   useEffect(() => {
     if (!help) return;
@@ -34,20 +35,13 @@ export default function Login({ notice = "", onLogin, onVisitor }) {
     }
   };
 
-  return (
+    return (
     <main className="login">
       <StatusBar />
 
       <div className="login-inner">
         <div className="login-brand">
-          <div
-            className="login-pill"
-            role="img"
-            aria-label="Logo placeholder"
-          />
-          <p className="login-brandname">
-            <span className="dress">Dress</span> <span className="num">2</span>
-          </p>
+          <img className="login-logo" src="/logo.png" alt="Sigma logo" />
         </div>
 
         <header className="login-head">
@@ -69,7 +63,7 @@ export default function Login({ notice = "", onLogin, onVisitor }) {
               autoCorrect="off"
               spellCheck={false}
               maxLength={10}
-              placeholder="enter your username"
+              placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={loading}
@@ -79,36 +73,34 @@ export default function Login({ notice = "", onLogin, onVisitor }) {
 
           <label className="field">
             <span className="field-label">Password</span>
-            <input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              placeholder="enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              required
-            />
+            <span className="pw-wrap">
+              <input
+                type={showPw ? "text" : "password"}
+                name="password"
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required
+              />
+              <button
+                type="button"
+                className="pw-toggle"
+                aria-pressed={showPw}
+                onClick={() => setShowPw((v) => !v)}
+              >
+                {showPw ? "Hide" : "Show"}
+              </button>
+            </span>
           </label>
 
-          <button
-            type="button"
-            className="forgot"
-            onClick={() => setHelp("forgot")}
-          >
+          <button type="button" className="forgot" onClick={() => setHelp("forgot")}>
             Forgot password?
           </button>
 
-          {error && (
-            <p className="login-error" role="alert">
-              {error}
-            </p>
-          )}
-          {!error && notice && (
-            <p className="login-notice" role="status">
-              {notice}
-            </p>
-          )}
+          {error && <p className="login-error" role="alert">{error}</p>}
+          {!error && notice && <p className="login-notice" role="status">{notice}</p>}
 
           <button type="submit" className="signin" disabled={loading}>
             {loading ? "Processing…" : "Sign in"}
@@ -117,32 +109,18 @@ export default function Login({ notice = "", onLogin, onVisitor }) {
 
         <p className="contact">
           Don’t have an account?{" "}
-          <button
-            type="button"
-            className="contact-link"
-            onClick={() => setHelp("contact")}
-          >
+          <button type="button" className="contact-link" onClick={() => setHelp("contact")}>
             Contact Admin
           </button>
         </p>
 
         {onVisitor && (
-          <button
-            type="button"
-            className="contact-link"
-            style={{
-              display: "block",
-              margin: "14px auto 0",
-              minHeight: 44,
-              fontSize: 16,
-            }}
-            onClick={onVisitor}
-          >
+          <button type="button" className="visitor-btn" onClick={onVisitor}>
             Continue as visitor (sample data)
           </button>
         )}
-        
       </div>
+
       {help && (
         <div className="lg-overlay" onClick={() => setHelp(null)}>
           <div
@@ -160,12 +138,7 @@ export default function Login({ notice = "", onLogin, onVisitor }) {
                 ? "Passwords can only be reset by your admin. Please contact your admin directly, and tell them your username."
                 : "Accounts are created by your admin. Please contact your admin directly to get access."}
             </p>
-            <button
-              type="button"
-              className="lg-modal-btn"
-              autoFocus
-              onClick={() => setHelp(null)}
-            >
+            <button type="button" className="lg-modal-btn" autoFocus onClick={() => setHelp(null)}>
               OK, I understand
             </button>
           </div>

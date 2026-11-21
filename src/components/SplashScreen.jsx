@@ -7,15 +7,12 @@ export default function SplashScreen({ onContinue }) {
       type="button"
       className="screen"
       onClick={onContinue}
-      aria-label="DRESS 2 – Quality Control Management System"
+      aria-label="Sigma – Quality Control Management System"
     >
       <StatusBar />
 
       <div className="logo-block">
-        <div className="logo-pill" role="img" aria-label="Logo placeholder" />
-        <h1 className="title">
-          <span className="dress">Dress</span> <span className="num">2</span>
-        </h1>
+        <img className="logo-img" src="/logo.png" alt="Sigma logo" />
         <p className="tagline">
           Quality Control
           <br />

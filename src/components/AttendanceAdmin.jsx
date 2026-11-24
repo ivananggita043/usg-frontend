@@ -13,6 +13,8 @@ import { SECTIONS } from "../config/sections.js";
 import "./DashboardUser.css";
 import "./Users.css";
 import "./AttendanceAdmin.css";
+import AttendanceDetail from "./AttendanceDetail.jsx";
+import { DEFAULT_AQL } from "../config/aql.js";
 
 const TZ = "Asia/Jakarta";
 const todayISO = () => new Date().toLocaleDateString("sv-SE", { timeZone: TZ });
@@ -74,6 +76,7 @@ export default function AttendanceAdmin({ isSuper, onBack }) {
   const [tick, setTick] = useState(0);
   const [sheet, setSheet] = useState(null); // { kind: "filter" | "edit" | "mark", item? }
   const [toast, setToast] = useState("");
+  const [detail, setDetail] = useState(null);
 
   const range = useMemo(() => rangeOf(mode, anchor), [mode, anchor]);
   const dates = useMemo(() => {
@@ -158,6 +161,7 @@ export default function AttendanceAdmin({ isSuper, onBack }) {
       .map((o) => {
         const r = workDays ? Math.round((o.present / workDays) * 100) : 0;
         return {
+          userId: o.rec.userId,
           key: o.rec.userId, rec: null,
           name: nameOf[o.rec.userId] ?? o.rec.username,
           head: `${secLabel(o.rec.section)} . ${lineText(o.rec.lines)}`,
@@ -200,6 +204,16 @@ export default function AttendanceAdmin({ isSuper, onBack }) {
   const reload = () => { clearProductivityCache(); setTick((t) => t + 1); };
   const saved = (msg) => { setSheet(null); setToast(msg); reload(); };
   const nextDisabled = shift(mode, anchor, 1) > todayISO() && rangeOf(mode, shift(mode, anchor, 1))[0] > todayISO();
+
+  if (detail) {
+    return (
+      <AttendanceDetail 
+        {...detail}
+        Edit={EditSheet}
+        onBack={() => { setDetail(null); reload(); }}
+      />
+    );
+  }
 
   return (
     <main className="dash us-bg">
@@ -254,21 +268,40 @@ export default function AttendanceAdmin({ isSuper, onBack }) {
             {!loading && sorted.length === 0 && missing.length === 0 && <li className="us-empty">No attendance records for this period.</li>}
             {!loading && sorted.map((it) => (
               <li key={it.key} className="aa-card">
-                <div className="aa-main">
-                  <strong className="aa-name">{it.name}</strong>
-                  <p className="aa-sub">
-                    {it.head}
-                    {it.out && <> | <b>{it.out}</b></>}
-                    {it.tail && <> | {it.tail}</>}
-                  </p>
-                </div>
+                {it.userId ? (
+                  <button
+                    type="button"
+                    className="aa-main aa-open"
+                    aria-label={`Open Attendance details for ${it.name}`}
+                    onClick={() => setDetail({ userId: it.userId, name: it.name, head: it.head, range, rangeLabel: label(mode, range) })}
+                  >
+                    <strong className="aa-name">{it.name}</strong>
+                    <p className="aa-sub">
+                      {it.head}
+                      {it.out && <> | <b>{it.out}</b></>}
+                      {it.tail && <> | {it.tail}</>}
+                    </p>
+                  </button>
+                ) : (
+                  <div className="aa-main">
+                    <strong className="aa-name">{it.name}</strong>
+                    <p className="aa-sub">
+                        {it.head}
+                        {it.out && <> | <b>{it.out}</b></>}
+                        {it.tail && <> | {it.tail} </>}
+                    </p>
+                  </div>
+                )}
                 <span className={`aa-pill ${it.tone}`}>{it.pill}</span>
-                {it.rec && (
+                {it.rec ? (
                   <button type="button" className={`aa-edit ${it.tone}`} aria-label={`Edit attendance ${it.name}`} onClick={() => setSheet({ kind: "edit", item: it })}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path d="M4 4h9l-2 2H6v12h12v-5l2-2v9H4V4z" /><path d="M18.6 3.4l2 2-8.2 8.2-2.8.8.8-2.8 8.2-8.2z" />
+                      <path d="M4 4h91-2 2H6v12h12v-5l2-2v9H4V4z" />
+                      <path d="M18.6 3.4l2 2-8.2 8.2-2.8.8.8-2.8 8.2-8.2z" />
                     </svg>
                   </button>
+                ) : (
+                  <span className="aa-go" aria-hidden="true">›</span>
                 )}
               </li>
             ))}

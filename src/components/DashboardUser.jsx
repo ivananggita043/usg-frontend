@@ -11,6 +11,7 @@ import "./DashboardUser.css";
 import { useCuttingInspections, cuttingUserDay } from "../api/cutting.js";
 import { useInspections, inspectionUserDay } from "../api/inspections.js";
 import AttendanceCard from "./AttendanceCard.jsx";
+import MenuIcon from "./MenuIcon.jsx";
 
 /* ---------- helper tanggal ---------- */
 const MONTHS = [
@@ -283,14 +284,7 @@ export default function DashboardUser({
             aria-label="Close menu"
             onClick={() => setMenuOpen(false)}
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-              <path
-                d="M3 3l12 12M15 3L3 15"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <MenuIcon name="close" size={20} />
           </button>
         </div>
 
@@ -315,21 +309,7 @@ export default function DashboardUser({
         </ul>
 
         <button type="button" className="logout" onClick={onLogout}>
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M9 4H5v16h4" />
-            <path d="M16 8l4 4-4 4" />
-            <path d="M20 12H9" />
-          </svg>
+          <MenuIcon name="logout" size={22} />
           <span>LOG OUT</span>
         </button>
       </nav>
@@ -359,49 +339,5 @@ function Stat({ value, label, red }) {
       <strong>{value}</strong>
       <span>{label}</span>
     </div>
-  );
-}
-
-function MenuIcon({ name, size = 24 }) {
-  const p = {
-    width: size,
-    height: size,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.8,
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    "aria-hidden": true,
-  };
-  if (name === "attendance")
-    return (
-      <svg {...p}>
-        <rect x="3.1" y="5" width="18" height="16" rx="2" />
-        <path d="M3.5 10h17M8 3v4M16 3v4"/>
-        <path d="m9 15 2 2 4-4" />
-      </svg>
-    );
-  if (name === "home")
-    return (
-      <svg {...p}>
-        <path d="M3 11.5 12 4l9 7.5" />
-        <path d="M5.5 10v9.5h13V10" />
-        <path d="M10 19.5v-5h4v5" />
-      </svg>
-    );
-  if (name === "records")
-    return (
-      <svg {...p}>
-        <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z" />
-        <path d="M9 9.5h.01M15 14.5h.01M15 9.5l-6 5" />
-      </svg>
-    );
-  return (
-    <svg {...p}>
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="10" r="3" />
-      <path d="M6.5 18c1.2-2 3.2-3 5.5-3s4.3 1 5.5 3" />
-    </svg>
   );
 }

@@ -29,6 +29,11 @@ export async function fetchAttendanceByDate(date, signal) {
   return (d?.content ?? []).map((a) => ({ ...a, section: lower(a.section), lines: a.lines ?? [] }));
 }
 
+export async function fetchAttendanceByUser(userId, signal) {
+  const d = await apiFetch(`${root()}/attendance/user/${userId}/paginated?page=0&size=100`, { signal });
+  return (d?.content ?? []).map((a) => ({ ...a, section: lower(a.section), line: a.lines ?? [] }));
+}
+
 // produktivitas harian satu QC (hari lampau di-cache)
 const prodCache = new Map();
 export const clearProductivityCache = () => prodCache.clear();

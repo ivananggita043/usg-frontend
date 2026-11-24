@@ -14,9 +14,9 @@ export default function SplashScreen({ onContinue }) {
       <div className="logo-block">
         <img className="logo-img" src="/logo.png" alt="Sigma logo" />
         <p className="tagline">
-          Quality Control
+          System Inspection 
           <br />
-          Management System
+          Garment Monitoring and Analysis
         </p>
       </div>
     </button>

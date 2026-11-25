@@ -322,10 +322,10 @@ function EditSheet({ row, onClose: closeNow, onSave }) {
   );
 }
 
-export default function CuttingHistory({ user, isAdmin = false, sectionTabs, onBack }) {
-  const [query, setQuery] = useState("");
+export default function CuttingHistory({ user, isAdmin = false, focus, sectionTabs, onBack }) {
+  const [query, setQuery] = useState(focus?.kind === "style" ? focus.name : "");
   const [sort, setSort] = useState("recent");
-  const [buyer, setBuyer] = useState("all");
+  const [buyer, setBuyer] = useState(focus?.buyer ?? "all");
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
   const [editing, setEditing] = useState(null);
@@ -339,6 +339,12 @@ export default function CuttingHistory({ user, isAdmin = false, sectionTabs, onB
     fetchPage: fetchCuttingPage,
     fetchAll: () => fetchMyCuttingInspections(),
   });
+
+  useEffect(() => {
+    if (focus) data.loadFull();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const filtering = query.trim() !== "" || buyer !== "all" || sort === "oldest";
   const waitingAll = filtering && !data.isFull;
 

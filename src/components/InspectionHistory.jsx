@@ -14,6 +14,7 @@ import "./History.css";
 import Pager from "./Pager.jsx";
 import { useGenie } from "./useGenie.js";
 import { usePagedList } from "../api/paged.js";
+import { useBuyers } from "../api/buyers.js";
 
 const SHORT = [
   "Jan",
@@ -38,7 +39,7 @@ const isoOf = (ts) => {
 
 /* ---------- field yang bisa diedit per section ---------- */
 const BASIC = [
-  { k: "buyer", label: "Buyer", type: "text", required: true },
+  { k: "buyer", label: "Buyer", type: "select", required: true },
   { k: "style", label: "Style", type: "text", required: true },
   { k: "color", label: "Color", type: "text", required: true },
   {
@@ -170,6 +171,7 @@ function EditSheet({
   onSave,
 }) {
   const g = useGenie(closeNow);
+  const { buyers } = useBuyers();
   const onClose = () => g.close(); // Esc, klik latar, dan tombol Cancel ikut beranimasi
   const fields = useMemo(() => fieldsFor(section), [section]);
   const [v, setV] = useState(() =>
@@ -327,7 +329,10 @@ function EditSheet({
             {f.type === "select" ? (
               <select value={v[f.k]} onChange={(e) => set(f.k, e.target.value)}>
                 <option value="">- select -</option>
-                {f.options.map((o) => (
+                {(f.k === "buyer"
+                  ? [...new Set([v.buyer, ...buyers.map((b) => b.name)].filter(Boolean))]
+                  : f.options
+                ).map((o) => (
                   <option key={o} value={o}>
                     {o}
                   </option>

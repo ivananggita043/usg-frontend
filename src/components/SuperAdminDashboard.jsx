@@ -287,8 +287,56 @@ export default function SuperAdminDashboard({
             </ul>
           </>
         )}
+
+        {/* Top 3 defect tiap section */}
+        {sections.some((s) => !s.sample) && (
+          <>
+            <h2 className="recent-title">Top Defects by Section</h2>
+            <div className="sa-topsec">
+              {sections
+                .filter((s) => !s.sample)
+                .map((s) => {
+                  const max = Math.max(1, ...(s.top ?? []).map((d) => d.count));
+                  return (
+                    <section key={s.key} className="card sa-topgrp" aria-label={`Top defects ${s.name}`}>
+                      <h3>
+                        <span>{s.name}</span>
+                        <small>{num(s.defects)} defect total</small>
+                      </h3>
+                      {(s.top ?? []).length === 0 ? (
+                        <p className="empty" style={{ margin: 0, fontSize: 16 }}>No defects recorded.</p>
+                      ) : (
+                        <ul className="sa-top">
+                          {s.top.map((d, i) => (
+                            <li key={d.name}>
+                              <span className="rank">{i + 1}</span>
+                              <div className="grow">
+                                <div className="top">
+                                  <span className="nm">{d.name}</span>
+                                  <strong>
+                                    {num(d.count)}
+                                    {s.defects > 0 && (
+                                      <span className="sa-share"> · {Math.round((d.count / s.defects) * 100)}%</span>
+                                    )}
+                                  </strong>
+                                </div>
+                                <div className="bar red">
+                                  <i style={{ width: `${(d.count / max) * 100}%` }} />
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </section>
+                  );
+                })}
+            </div>
+          </>
+        )}
+
         <BuyerPerformance
-          sections={["sewing", "washing", "finishing", "packing"]}
+          sections={["cutting", "sewing", "washing", "finishing", "packing"]}
           section={bsSec}
           onSection={setBsSec}
           date={date}

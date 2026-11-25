@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "./client.js";
 import { hourLabel, hourValue } from "../config/sections.js";
+import { buyerIdOf } from "./buyers.js"
 
 import { loadSession } from "../auth/session.js";
 
@@ -97,7 +98,7 @@ export async function createInspection(section, job) {
   return apiFetch("/user/inspections", {
     method: "POST",
     body: {
-      buyerName: job.buyer,
+      buyerId: job.buyerId || (await buyerIdOf(job.buyer)),
       styleCode: job.style,
       colorName: job.color,
       lineId: job.lineId,
@@ -123,8 +124,12 @@ export const fetchMyInspections = (section, signal) =>
 export const fetchInspectionsPage = (section, page, size, signal) =>
   apiFetch(`${base()}/paginated?section=${SECTION_ENUM[section]}&page=${page}&size=${size}`, { signal });
 
-export const updateInspection = (id, body) =>
-  apiFetch(`${base()}/${id}`, { method: "PUT", body });
+export const updateInspection = async (id, body) => {
+  const { buyerName, ...rest } = body;
+  const payload =
+    rest.buyerId || !buyerName ? rest : { ...rest, buyerId: await buyerIdOf(buyerName) };
+  return apiFetch(`${base()}/${id}`, { method: "PUT", body: payload })
+};
 
 export const deleteInspection = (id) =>
   apiFetch(`${base()}/${id}`, { method: "DELETE" });

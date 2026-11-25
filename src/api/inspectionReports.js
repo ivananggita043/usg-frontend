@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "./client.js";
 import { fetchMyInspections, loadDefectTypes } from "./inspections.js";
 import { loadSession } from "../auth/session.js";
+import { fetchMyCuttingInspections } from "./cutting.js";
+
 
 const isSuper = () => loadSession()?.user?.role === "super_admin";
 
@@ -147,6 +149,30 @@ export function buildBuyerStyle(list, typesById, iso) {
   }));
 }
 
+// cutting: tiap item style dijadikan satu "inspeksi" supaya bisa dihitung dengan buildBuyerStyle
+function flattenCutting(list) {
+  const types = {};
+  const flat = [];
+  list.forEach((c) => {
+    (c.items ?? []).forEach((it) => {
+      if (it.defectTypeId)
+        types[it.defectTypeId] = { id: it.defectTypeId, name: it.defectTypeName || "Defect", category: "" };
+      flat.push({
+        createdAt: c.createdAt,
+        buyerName: it.buyerName,
+        styleCode: it.styleCode,
+        inspectQuantity: it.quantityInspect ?? 0,
+        totalDefect: it.quantityDefect ?? 0,
+        defect:
+          it.defectTypeId && it.quantityDefect
+            ? [{ defectTypeId: it.defectTypeId, quantity: it.quantityDefect }]
+            : [],
+      });
+    });
+  });
+  return { flat, types };
+}
+
 export function useBuyerStyleDay(section, date, enabled) {
   const [raw, setRaw] = useState({ list: null, types: {}, error: "" });
 
@@ -154,17 +180,23 @@ export function useBuyerStyleDay(section, date, enabled) {
     if (!enabled) return;
     const ctrl = new AbortController();
     setRaw({ list: null, types: {}, error: "" });
+    const isCut = section === "cutting";
     Promise.all([
-      fetchMyInspections(section, ctrl.signal),
-      loadDefectTypes().catch(() => []),
+      isCut ? fetchMyCuttingInspections(ctrl.signal) : fetchMyInspections(section, ctrl.signal),
+      isCut ? Promise.resolve([]) : loadDefectTypes().catch(() => []),
     ])
-      .then(([list, types]) =>
-        setRaw({
-          list,
-          types: Object.fromEntries(types.map((t) => [t.id, t])),
-          error: "",
-        }),
-      )
+      .then(([list, types]) => {
+        if (isCut) {
+          const f = flattenCutting(list);
+          setRaw({ list: f.flat, types: f.types, error: "" });
+        } else {
+          setRaw({
+            list,
+            types: Object.fromEntries(types.map((t) => [t.id, t])),
+            error: "",
+          });
+        }
+      })
       .catch((e) => {
         if (e?.name === "AbortError") return;
         setRaw({ list: null, types: {}, error: e.message || "Failed to load data." });

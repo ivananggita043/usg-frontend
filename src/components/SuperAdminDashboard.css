@@ -161,3 +161,22 @@
 .sa-pick-box p { margin: 0 0 4px; font-size: 16px; color: #555; }
 .sa-pick-box button { min-height: 50px; font-size: 17px; border-radius: 10px; border: 1px solid #5b5bd6; background: #5b5bd6; color: #fff; }
 .sa-pick-box button.ghost { background: #fff; color: #5b5bd6; }
+
+.sa-topsec { display: grid; gap: 12px; }
+.sa-topgrp { padding: 14px 16px; }
+.sa-topgrp h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #3748a1;
+}
+.sa-topgrp h3 small { font-size: 15px; font-weight: 400; color: #666; }
+.sa-share { font-size: 15px; font-weight: 400; color:#666; }
+
+@media (min-width : 768px) {
+  .sa-topsec { grid-template-columns: repeat(2, 1fr); }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchCuttingReport } from "./cutting.js";
 import { fetchInspectionDaily } from "./inspectionReports.js";
+import { SECTIONS } from "../config/sections.js";
 
 /* Ringkasan Super Admin: laporan harian tiap section untuk tanggal terpilih
    dan hari sebelumnya (untuk delta "vs yesterday").
@@ -135,6 +136,7 @@ export function useSuperDay(date, mock) {
           pct: Math.round(passOf(r.cur.qty, r.cur.defects)),
           inspections: r.cur.inspections,
           defects: r.cur.defects,
+          top: [...r.cur.types].sort((a, b) => b.count - a.count).slice(0, 3),
         }));
 
       // Top Defects: gabung antar section menurut nama defect

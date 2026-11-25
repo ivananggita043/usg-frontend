@@ -1,10 +1,10 @@
 import { useState } from "react";
 import StatusBar from "./StatusBar.jsx";
 import { hourLabel, hourSlots } from "../config/sections.js";
+import { useBuyers } from "../api/buyers.js"
 import "./NewQcCheck.css";
 
 const FIELDS = [
-  { name: "buyer", label: "Buyer", placeholder: "e.g. VS" },
   { name: "style", label: "Style", placeholder: "Enter style" },
   { name: "color", label: "Color", placeholder: "Enter color" },
   {
@@ -39,6 +39,7 @@ export default function NewQcCheck({
   const [hour, setHour] = useState(String(hours[0]));
   const [lineId, setLineId] = useState(lineIds[0] ?? "");
   const [error, setError] = useState("");
+  const { buyers, loading: buyersLoading, error: buyersError, reload: reloadBuyers } = useBuyers();
   const [values, setValues] = useState({
     buyer: "",
     style: "",
@@ -69,6 +70,7 @@ export default function NewQcCheck({
       return setError(
         "This account has no line assigned. Please contact your admin.",
       );
+    if (!values.buyer) return setError("Please chose buyer.")
     const inspect = Number(values.inspect);
     const transfer = Number(values.transfer);
     if (inspect < 1) return setError("Inspect must be at least 1.");
@@ -224,6 +226,34 @@ export default function NewQcCheck({
             </select>
           </label>
         )}
+
+        <label className="nq-field">
+          <span className="nq-label">Buyer</span>
+          <select 
+          name="buyer" 
+          value={values.buyer}
+          onChange={handleChange}
+          disabled={buyersLoading || !!buyersError}
+          required
+          >
+            <option value="">
+              {buyersLoading ? "Loading buyers..." : "Select buyer"}
+            </option>
+            {buyers.map((b) => (
+              <option key={b.id} value={b.name}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+          {buyersError && (
+            <span className="nq-hint" role="alert" style={{ color: "#c62828", fontWeight: 600 }}>
+              {buyersError}{" "}
+              <button type="button" onClick={reloadBuyers} style={{ minHeight: 44, font: "inherit", textDecoration: "underline", background: "none", border: 0, color: "#3748a1", cursor: "pointer" }}>
+                Retry
+              </button>
+            </span>
+          )}
+        </label>
 
         {FIELDS.map((f) => (
           <label key={f.name} className="nq-field">

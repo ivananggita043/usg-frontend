@@ -67,7 +67,7 @@ export default function SuperAdminDashboard({
   const live = useSuperDay(date, mock);
   const { kpi, sections } = live.data ?? { kpi: null, sections: [] };
   const [bsSec, setBsSec] = useState("sewing");
-  const buyerStyle = useBuyerStyleDay(bsSec, date, true);
+  const buyerStyle = useBuyerStyleDay(bsSec, date, true, live.refreshKey);
   const topDefects = live.data?.topDefects ?? [];
   const isToday = date === TODAY;
   const maxDefect = Math.max(1, ...topDefects.map((d) => d.count));
@@ -134,6 +134,14 @@ export default function SuperAdminDashboard({
             onChange={(e) => e.target.value && setDate(e.target.value)}
           />
         </div>
+
+        {isToday && live.updateAt && (
+          <p className="perf-legend" role="status" style={{ marginTop: 6 }}>
+            Live · updated{" "}
+            {new Date(live.updatedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+            {" "}· refreshes every 30 seconds
+          </p>
+        )}
 
         {/* KPI */}
         {live.loading && !live.data ? (

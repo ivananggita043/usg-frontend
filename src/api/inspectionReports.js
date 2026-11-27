@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { apiFetch } from "./client.js";
 import { fetchMyInspections, loadDefectTypes } from "./inspections.js";
 import { loadSession } from "../auth/session.js";
 import { fetchMyCuttingInspections } from "./cutting.js";
-
 
 const isSuper = () => loadSession()?.user?.role === "super_admin";
 
@@ -173,13 +172,19 @@ function flattenCutting(list) {
   return { flat, types };
 }
 
-export function useBuyerStyleDay(section, date, enabled) {
+export function useBuyerStyleDay(section, date, enabled, refreshKey = 0) {
   const [raw, setRaw] = useState({ list: null, types: {}, error: "" });
+  const secRef = useRef(null);
 
   useEffect(() => {
     if (!enabled) return;
     const ctrl = new AbortController();
-    setRaw({ list: null, types: {}, error: "" });
+    // reset tampilan hanya saat ganti section; refresh berkala berjalan diam-diam
+    if (secRef.current !== section) {
+      secRef.ref = section;
+      setRaw({ list: null, types: {}, error: "" });
+    }
+
     const isCut = section === "cutting";
     Promise.all([
       isCut ? fetchMyCuttingInspections(ctrl.signal) : fetchMyInspections(section, ctrl.signal),
@@ -196,13 +201,13 @@ export function useBuyerStyleDay(section, date, enabled) {
             error: "",
           });
         }
-      })
+    })
       .catch((e) => {
         if (e?.name === "AbortError") return;
-        setRaw({ list: null, types: {}, error: e.message || "Failed to load data." });
+        setRaw((r) => (r.list ? r : { list: null, types: {}, error: e.message || "Failed to load data." }));
       });
     return () => ctrl.abort();
-  }, [section, enabled]);
+  }, [section, enabled, refreshKey]);
 
   const data = useMemo(
     () => (raw.list ? buildBuyerStyle(raw.list, raw.types, date) : null),
